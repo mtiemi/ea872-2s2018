@@ -1,11 +1,10 @@
-// EA872 - LAB06
+//EA872 - LAB4
 // Mariane Tiemi Iguti (RA147279) e Gabriela Akemi Shima (RA135819)
-
 #ifndef OO_MODEL_HPP
 #define OO_MODEL_HPP
 
-#include "portaudio.h"  
-#include <vector>       
+#include "portaudio.h"  //edit: From MP4 playback.hpp
+#include <vector>       //edit: From MP4 playback.hpp
 #include <thread>
 
 #define SCREEN_HEIGHT 20
@@ -19,7 +18,8 @@
 
 #define FALSE 0
 #define TRUE  1
-extern int flag_cresceu;
+
+//extern int flag_cresceu;
 
 class Corpo {
   private:
@@ -62,7 +62,6 @@ class ListaDeCorpos {
     std::vector<Corpo*> *get_corpos();
 };
 
-// Controller de Snake
 class SnakeController {
   private:
     ListaDeCorpos *lista;
@@ -70,10 +69,12 @@ class SnakeController {
   public:
     SnakeController(ListaDeCorpos *ldc);
     void add_corpo(Corpo *c);
+    void choque();
     void andar_para_cima();
     void andar_para_baixo();
     void andar_para_direita();
     void andar_para_esquerda();
+    void surgir_comida();
     void update(float deltaT);
 };
 

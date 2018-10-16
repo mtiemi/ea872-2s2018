@@ -1,24 +1,22 @@
-// EA872 - LAB06
+//EA872 - LAB4
 // Mariane Tiemi Iguti (RA147279) e Gabriela Akemi Shima (RA135819)
-
 #include <vector>
 #include <chrono>
 #include <thread>
 #include <iostream>
-#include <fstream> 
-#include <sstream>
-#include <string> 
-#include <random> 
-#include <time.h> 
+#include <fstream> //edit: include from playback.cpp
+#include <sstream> //edit: include from playback.cpp
+#include <string> //edit: include from playback.cpp
+#include <random> //edit: include from playback.cpp
+#include <time.h>
 #include <stdlib.h>
 #include <ncurses.h>
 #include "oo_model.hpp"
 
-int flag_cresceu;
+int flag_cresceu = FALSE;
 
 using namespace std::chrono;
 
-// Classe Corpo tem parametros de velocidade, posicao e tipo(pode ser COMIDA, SNAKE_HEAD e SNAKE_BODY)
 Corpo::Corpo( float velocidade_x,
               float velocidade_y,
               float posicao_x,
@@ -34,7 +32,6 @@ Corpo::Corpo( float velocidade_x,
 
 }
 
-// update dos atributos de corpo
 void Corpo::update( float nova_velocidade_x,
                     float nova_velocidade_y,
                     float nova_posicao_x ,
@@ -47,7 +44,7 @@ void Corpo::update( float nova_velocidade_x,
 
 }
 
-// Get dos atributos de corpo
+
 float Corpo::get_velocidade_x() {
   return this->velocidade_x;
 }
@@ -68,12 +65,10 @@ int Corpo::get_tipo() {
   return this->tipo;
 }
 
-// Lista de Corpos, um vetor de corpos
 ListaDeCorpos::ListaDeCorpos() {
   this->corpos = new std::vector<Corpo *>(0);
 }
 
-// copia lista de corpos para uma outra lista
 void ListaDeCorpos::hard_copy(ListaDeCorpos *ldc) {
   std::vector<Corpo *> *corpos = ldc->get_corpos();
 
@@ -89,12 +84,11 @@ void ListaDeCorpos::hard_copy(ListaDeCorpos *ldc) {
 
 }
 
-// adiciona um corpo na lista
+
 void ListaDeCorpos::add_corpo(Corpo *c) {
   (this->corpos)->push_back(c);
 }
 
-//get de lista de corpos
 std::vector<Corpo*> *ListaDeCorpos::get_corpos() {
   return (this->corpos);
 }
@@ -107,15 +101,15 @@ void SnakeController::add_corpo(Corpo *c){
   (this->lista)->add_corpo(c);
 }
 void SnakeController::update(float deltaT) {
-    
-  flag_cresceu = FALSE;
+  // Atualiza parametros dos corpos!
   std::vector<Corpo *> *c = this->lista->get_corpos();
   float new_vel_x, new_vel_y, new_pos_x, new_pos_y;
+  //float old_pos_x_head, old_pos_y_head;
   float old_pos_x, old_pos_y, old_vel_x, old_vel_y;
 
   for (int i = 0; i < (*c).size(); i++) {
 
-    //trata atualizacao da posicao e velocidade da cabeça
+    //trata atualizacao da posicao da cabeça
     if((*c)[i]->get_tipo() == SNAKE_HEAD) {
 
       old_pos_x = (*c)[i]->get_posicao_x();
@@ -129,31 +123,31 @@ void SnakeController::update(float deltaT) {
       new_pos_y = (*c)[i]->get_posicao_y() + (float)deltaT * new_vel_y/5000;
 
       //Verifica se comeu a COMIDA
-      int i_comida = (int)((*c)[0]->get_posicao_x());
-      int j_comida = (int)((*c)[0]->get_posicao_y());
-      int i_head = (int)(new_pos_x);
-      int j_head = (int)(new_pos_y);
 
-       if(i_comida == i_head && j_comida == j_head){ // quando a cabeca do snake estiver na mesma posicao que a comida
-          
-           //Escreve a comida em outra posicao
+      int i_comida = (int)((*c)[0]->get_posicao_x());
+      //std::cout << i_comida <<std::endl;
+      int j_comida = (int)((*c)[0]->get_posicao_y());
+      //std::cout << j_comida <<std::endl;
+      int i_head = (int)(new_pos_x);
+      //std::cout << i_head <<std::endl;
+      int j_head = (int)(new_pos_y);
+      //std::cout << j_head<<std::endl;
+
+       if( i_comida == i_head && j_comida == j_head){
+          //Escreve a comida em outra posicao
           srand(time(NULL)); //inicializa random seed
-          float new_pos_x1 = rand() % SCREEN_WIDTH ; // randomiza a posicao x da comida
-          float new_pos_y1 = rand() % SCREEN_HEIGHT; // randomiza a posicao y da comida
-          (*c)[0]->update(0,0,new_pos_x1,new_pos_y1); // update da posicao nova da comida
-          
-          
-        // PARTE DO ERRO QUANDO TENTAMOS ADICIONAR UM NOVO CORPO NA LISTA DE CORPOS
+          float new_pos_x1 = rand() % SCREEN_WIDTH ;
+          float new_pos_y1 = rand() % SCREEN_HEIGHT;
+          (*c)[0]->update(0,0,new_pos_x1,new_pos_y1);
           //Adiciona novo corpo à lista de corpos(cobra)
           flag_cresceu = TRUE;
-          
-//           Corpo *cp = new Corpo ( (*c)[(*c).size() - 1]->get_velocidade_x(),\
-//                                   (*c)[(*c).size() - 1]->get_velocidade_y(),\
-//                                   (*c)[(*c).size() - 1]->get_posicao_x(),\
-//                                   (*c)[(*c).size() - 1]->get_posicao_y(),
-//                                   SNAKE_BODY
-//                                 );
-//           this->lista->add_corpo(cp); // QUANDO TENTAMOS COMPILAR COM ESSA LINHA DESCOMENTADA, TEMOS SEGMENTATION FAULT 
+          // Corpo *cp = new Corpo ( (*c)[(*c).size() - 1]->get_velocidade_x(),\
+          //                         (*c)[(*c).size() - 1]->get_velocidade_y(),\
+          //                         (*c)[(*c).size() - 1]->get_posicao_x(),\
+          //                         (*c)[(*c).size() - 1]->get_posicao_y(),
+          //                         SNAKE_BODY
+          //                       );
+          // this->lista->add_corpo(cp);
       }
 
       // //Verifica se morreu/comeu
@@ -181,7 +175,7 @@ void SnakeController::update(float deltaT) {
       //   }
       // }
 
-      //Essa parte trata as bordas da tela para fazer o snake atravessar para o outro lado da tela
+      //Essa parte trata as bordas da tela
       if(new_pos_x >= SCREEN_WIDTH && new_vel_x > 0)
         new_pos_x = 0;
       else if (new_pos_x <= 0 && new_vel_x < 0)
@@ -195,6 +189,7 @@ void SnakeController::update(float deltaT) {
     }
 
     //trata atualizacao da posicao do body
+
     else if((*c)[i]->get_tipo() == SNAKE_BODY) {
       if( (*c)[i]->get_velocidade_x() > 0 ) {
         new_pos_x = old_pos_x - 0.3;
@@ -221,6 +216,11 @@ void SnakeController::update(float deltaT) {
         new_vel_y = old_vel_y;
       }
 
+      // new_pos_x = old_pos_x;
+      // new_pos_y = old_pos_y;
+      // new_vel_x = old_vel_x;
+      // new_vel_y = old_vel_y;
+
       old_pos_x = (*c)[i]->get_posicao_x();
       old_pos_y = (*c)[i]->get_posicao_y();
       old_vel_x = (*c)[i]->get_velocidade_x();
@@ -232,10 +232,10 @@ void SnakeController::update(float deltaT) {
 }
 
 void SnakeController::andar_para_cima() {
-  // Atualiza parametros dos corpos para andar para cima!
+  // Atualiza parametros dos corpos!
   std::vector<Corpo *> *c = this->lista->get_corpos();
   for (int i = 0; i < (*c).size(); i++) {
-    if((*c)[i]->get_velocidade_y() > 0); // condicao para fazer o snake nao andar para cima quando esta andando para baixo
+    if((*c)[i]->get_velocidade_y() > 0);
     else {
       if((*c)[i]->get_tipo() == SNAKE_HEAD ) {
         float new_vel_x = 0;
@@ -249,10 +249,10 @@ void SnakeController::andar_para_cima() {
 }
 
 void SnakeController::andar_para_baixo() {
-  // Atualiza parametros dos corpos para andar para baixo!
+  // Atualiza parametros dos corpos!
   std::vector<Corpo *> *c = this->lista->get_corpos();
   for (int i = 0; i < (*c).size(); i++) {
-    if((*c)[i]->get_velocidade_y() < 0); // condicao para fazer o snake nao andar para baixo quando esta andando para cima
+    if((*c)[i]->get_velocidade_y() < 0);
     else {
       if((*c)[i]->get_tipo() == SNAKE_HEAD ) {
         float new_vel_x = 0;
@@ -266,10 +266,10 @@ void SnakeController::andar_para_baixo() {
 }
 
 void SnakeController::andar_para_direita() {
-  // Atualiza parametros dos corpos para andar para direita!
+  // Atualiza parametros dos corpos!
   std::vector<Corpo *> *c = this->lista->get_corpos();
   for (int i = 0; i < (*c).size(); i++) {
-    if((*c)[i]->get_velocidade_x() < 0); // condicao para fazer o snake nao andar para direita quando esta andando para esquerda
+    if((*c)[i]->get_velocidade_x() < 0);
     else {
       if((*c)[i]->get_tipo() == SNAKE_HEAD ) {
         float new_vel_x = VELOCIDADE;
@@ -283,10 +283,10 @@ void SnakeController::andar_para_direita() {
 }
 
 void SnakeController::andar_para_esquerda() {
-  // Atualiza parametros dos corpos para andar para esquerda!
+  // Atualiza parametros dos corpos!
   std::vector<Corpo *> *c = this->lista->get_corpos();
   for (int i = 0; i < (*c).size(); i++) {
-    if((*c)[i]->get_velocidade_x() > 0); // condicao para fazer o snake nao andar para esquerda quando esta andando para direita
+    if((*c)[i]->get_velocidade_x() > 0);
     else {
       if((*c)[i]->get_tipo() == SNAKE_HEAD) {
         float new_vel_x = - VELOCIDADE;
@@ -335,13 +335,15 @@ void Tela::update() {
   {
     i = (int) ((*corpos)[k]->get_posicao_x()) * (this->maxI / this->maxX);
     j = (int) ((*corpos)[k]->get_posicao_y()) * (this->maxI / this->maxX);
+    //if(move(j, i) != ERR) echochar('@');
 
-    if((*corpos)[k]->get_tipo() == COMIDA) { // Printa a comida
+    if((*corpos)[k]->get_tipo() == COMIDA) {
       if(move(j, i) != ERR) echochar('*');  /* Prints character, advances a position */
     }
-    else { // Printa parte do snake(head ou body)
+    else {
       if(move(j, i) != ERR) echochar('@');  /* Prints character, advances a position */
     }
+
 
     // Atualiza corpos antigos
     (*corpos_old)[k]->update(   (*corpos)[k]->get_velocidade_x(),\
@@ -413,7 +415,6 @@ void Teclado::init() {
 void Teclado::stop() {
   this->rodando = 0;
   (this->kb_thread).join();
-
 }
 
 char Teclado::getchar() {

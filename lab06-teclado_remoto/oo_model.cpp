@@ -1,15 +1,15 @@
-// EA872 - LAB06
+// EA872 - LAB07
 // Mariane Tiemi Iguti (RA147279) e Gabriela Akemi Shima (RA135819)
 
 #include <vector>
 #include <chrono>
 #include <thread>
 #include <iostream>
-#include <fstream> 
+#include <fstream>
 #include <sstream>
-#include <string> 
-#include <random> 
-#include <time.h> 
+#include <string>
+#include <random>
+#include <time.h>
 #include <stdlib.h>
 #include <ncurses.h>
 #include "oo_model.hpp"
@@ -107,7 +107,7 @@ void SnakeController::add_corpo(Corpo *c){
   (this->lista)->add_corpo(c);
 }
 void SnakeController::update(float deltaT) {
-    
+
   flag_cresceu = FALSE;
   std::vector<Corpo *> *c = this->lista->get_corpos();
   float new_vel_x, new_vel_y, new_pos_x, new_pos_y;
@@ -135,25 +135,25 @@ void SnakeController::update(float deltaT) {
       int j_head = (int)(new_pos_y);
 
        if(i_comida == i_head && j_comida == j_head){ // quando a cabeca do snake estiver na mesma posicao que a comida
-          
+
            //Escreve a comida em outra posicao
           srand(time(NULL)); //inicializa random seed
           float new_pos_x1 = rand() % SCREEN_WIDTH ; // randomiza a posicao x da comida
           float new_pos_y1 = rand() % SCREEN_HEIGHT; // randomiza a posicao y da comida
           (*c)[0]->update(0,0,new_pos_x1,new_pos_y1); // update da posicao nova da comida
-          
-          
+
+
         // PARTE DO ERRO QUANDO TENTAMOS ADICIONAR UM NOVO CORPO NA LISTA DE CORPOS
           //Adiciona novo corpo à lista de corpos(cobra)
           flag_cresceu = TRUE;
-          
+
 //           Corpo *cp = new Corpo ( (*c)[(*c).size() - 1]->get_velocidade_x(),\
 //                                   (*c)[(*c).size() - 1]->get_velocidade_y(),\
 //                                   (*c)[(*c).size() - 1]->get_posicao_x(),\
 //                                   (*c)[(*c).size() - 1]->get_posicao_y(),
 //                                   SNAKE_BODY
 //                                 );
-//           this->lista->add_corpo(cp); // QUANDO TENTAMOS COMPILAR COM ESSA LINHA DESCOMENTADA, TEMOS SEGMENTATION FAULT 
+//           this->lista->add_corpo(cp); // QUANDO TENTAMOS COMPILAR COM ESSA LINHA DESCOMENTADA, TEMOS SEGMENTATION FAULT
       }
 
       // //Verifica se morreu/comeu

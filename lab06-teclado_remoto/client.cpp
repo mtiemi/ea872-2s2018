@@ -1,4 +1,4 @@
-// EA872 - LAB06
+// EA872 - LAB07
 // Mariane Tiemi Iguti (RA147279) e Gabriela Akemi Shima (RA135819)
 
 #include <iostream>

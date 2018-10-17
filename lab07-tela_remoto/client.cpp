@@ -82,7 +82,7 @@ int main() {
     tela->update();
   // edit: Lê o teclado
     char c = teclado->getchar();
-
+    //envia comando
     if(c == 'w' || c == 's' || c == 'a' || c == 'd' || c == 'q'){  //edit: envia apenas esses caracteres como entrada
 
       if (c=='w') {

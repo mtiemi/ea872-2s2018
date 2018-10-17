@@ -1,11 +1,11 @@
-// EA872 - LAB06
+// EA872 - LAB07
 // Mariane Tiemi Iguti (RA147279) e Gabriela Akemi Shima (RA135819)
 
 #ifndef OO_MODEL_HPP
 #define OO_MODEL_HPP
 
-#include "portaudio.h"  
-#include <vector>       
+#include "portaudio.h"
+#include <vector>
 #include <thread>
 
 #define SCREEN_HEIGHT 20

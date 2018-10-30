@@ -31,8 +31,8 @@ int main() {
 
   /*** Início - Criando dados para enviar para cliente ***/
   printf("\nCriando structs para receber do server!\n");
-  RelevantData D1(5000, 'z');
-  RelevantData D2(1000, 'x');
+  RelevantData D1(1.234, 2.345,1.234, 2.345,11);
+  RelevantData D2(4.321, 3.456,4.321, 3.456,12);
 
   //std::string buffer(sizeof(DataContainer), '\0');
 
@@ -44,9 +44,9 @@ int main() {
 
   /* Recebendo resposta */
   char *reply;
-  reply = (char *) malloc(sizeof(DataContainer));
+  reply = (char *) malloc(50);
   int msg_len;
-  msg_len = recv(socket_fd, reply, 100, MSG_DONTWAIT); //edit: mudei de '10' para 'sizeof(DataContainer)'
+  msg_len = recv(socket_fd, reply, 50, MSG_DONTWAIT); //edit: mudei de '10' para 'sizeof(DataContainer)'
   if(msg_len > 0) {
     printf("Recebi a mensagem: %d\n", msg_len);
   }

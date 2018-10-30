@@ -7,8 +7,11 @@
 #include <string>
 
 struct DataContainer {
-  int a;
-  char b;
+  float velocidade_x;
+  float velocidade_y;
+  float posicao_x;
+  float posicao_y;
+  int tipo;
 };
 
 class RelevantData {
@@ -17,7 +20,7 @@ class RelevantData {
 
   public:
     RelevantData();
-    RelevantData(int a, char b);
+    RelevantData(float velocidade_x, float velocidade_y, float posicao_x, float posicao_y, int tipo);
     RelevantData(std::string buffer_in);
     void serialize(std::string &buffer_out);
     void unserialize(std::string buffer_in);

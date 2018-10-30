@@ -21,9 +21,17 @@ class RelevantData {
 RelevantData::RelevantData() {
 };
 
-RelevantData::RelevantData(int a, char b) {
-  this->data.a = a;
-  this->data.b = b;
+RelevantData::RelevantData (  float velocidade_x,
+                float velocidade_y,
+                float posicao_x,
+                float posicao_y,
+                int tipo
+              ) {
+  this->data.velocidade_x = velocidade_x;
+  this->data.velocidade_y = velocidade_y;
+  this->data.posicao_x = posicao_x;
+  this->data.posicao_y = posicao_y;
+  this->data.tipo = tipo;
 }
 
 RelevantData::RelevantData(std::string buffer_in) {
@@ -32,20 +40,28 @@ RelevantData::RelevantData(std::string buffer_in) {
 
 void RelevantData::serialize(std::string &buffer_out) {
   //std::memcpy((void*)buffer_out.c_str(), &(this->data), sizeof(DataContainer));
-  int c = this->data.a;
-  char d = this->data.b;
-  sprintf((char*) buffer_out.c_str() , "%d %c\n", c, d);
+  // float a = this->data.velocidade_x;
+  // float b = this->data.velocidade_y;
+  // float c =this->data.posicao_x;
+  // float d = this->data.posicao_y;
+  // int e = this->data.tipo;
+  sprintf((char*) buffer_out.c_str() , "%f %f %f %f %d\n", this->data.velocidade_x, this->data.velocidade_y, this->data.posicao_x, this->data.posicao_y, this->data.tipo);
 }
 
 void RelevantData::unserialize(std::string buffer_in) {
   //std::memcpy(&(this->data), (void*)buffer_in.c_str(), sizeof(DataContainer));
-  int c;
-  char d;
-  sscanf(buffer_in.c_str(), "%d %c", &c, &d);
-  this->data.a = c;
-  this->data.b = d;
+  float a, b, c, d;
+  int e;
+  sscanf(buffer_in.c_str(), "%f %f %f %f %d", &this->data.velocidade_x, &this->data.velocidade_y, &this->data.posicao_x, &this->data.posicao_y, &this->data.tipo);
+  //this->data.velocidade_x = a;
+  //this->data.velocidade_y = b;
+  //this->data.posicao_x = c;
+  //this->data.posicao_y = d;
+  //this->data.tipo = e;
 }
 
 void RelevantData::dump() {
-  std::cout << this->data.a << '\n' << this->data.b << '\n';
+  std::cout << this->data.velocidade_x << '\n' << this->data.velocidade_y << '\n';
+  std::cout << this->data.posicao_x << '\n' << this->data.posicao_y << '\n';
+  std::cout << this->data.tipo << '\n' ;
 }

@@ -33,46 +33,21 @@ int main() {
 
   /*** Início - Criando dados para enviar para cliente ***/
   printf("\nCriando structs para enviar para o cliente!\n");
-  RelevantData D1(11, 's');
-  RelevantData D2(10, 'b');
+  RelevantData D1(9.87, 8.76,9.87, 8.76, 21);
+  RelevantData D2(7.65, 6.54,7.65, 6.54, 22);
 
-  std::string buffer(sizeof(DataContainer), ' ');
+  std::string buffer(50, ' ');
 
   std::cout << "Originais:\n";
   D1.dump();
   D2.dump();
 
-  D1.serialize(buffer);
-  //edit: Transforma em array de char para poder enviar dados
-  printf("Serializado (buffer) :");
-  std::cout << buffer << "\n";
-  char send_buffer[buffer.size() + 1];
-  strcpy(send_buffer, buffer.c_str());
+  D1.serialize(buffer); //edit: Transforma em array de char para poder enviar dados
 
-  // std::string vetor1 = "Olar!";
-  // char vetor2[vetor1.size() + 1];
-  // strcpy(vetor2, vetor1.c_str());
-  // std::cout << "vector1 = " << vetor1 << '\n';
-  // std::cout << "vector2 = " << vetor2 << '\n';
-
-  // char *send_buffer;
-  // send_buffer = (char *) malloc( sizeof(buffer));
-  // for(int l = 0;l <= buffer.length(); l++ ){
-  //   printf("Caractere %d: %c\n", l, buffer[l]);
-  //   send_buffer[l] = buffer.c_str()[l];
-  // }
-
-  printf("Copiado para array de char (send_buffer) : %s", buffer.c_str());
-  std::cout << buffer << "\n";
+  printf("Copiado para array de char (send_buffer) : %s\n", buffer.c_str());
+  std::cout << buffer << "\n====================\n";
+  printf("Copiado para array de char (send_buffer) : %s\n", buffer.c_str());
   D2.unserialize(buffer);
-  // std::cout << "Size buffer: " << sizeof(buffer) << std::endl;
-  // std::cout << "Size buffer.c_str(): " << sizeof(buffer.c_str()) << std::endl;
-  // std::cout << "Size D2: " << sizeof(D2) << std::endl;
-  // std::cout << "Size DataContainer: " << sizeof(DataContainer) << std::endl;
-  // std::cout << "Size RelevantData: " << sizeof(char) << std::endl;
-  // std::cout << "Size char: " << sizeof(char) << std::endl;
-  // std::cout << "Size int: " << sizeof(int) << std::endl
-
   D2.dump();
   /*** Fim - Criando dados para enviar para cliente ***/
 
@@ -91,7 +66,7 @@ int main() {
 
     /* Respondendo */
     printf("Enviando mensagem de retorno\n");
-    if (send(connection_fd, buffer.c_str(), 100, 0) < 0) { //edit:
+    if (send(connection_fd, buffer.c_str(), 50, 0) < 0) { //edit:
       printf("Erro ao enviar mensagem de retorno\n");
     } else {
       printf("Sucesso para enviar mensagem de retorno\n");

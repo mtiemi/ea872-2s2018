@@ -7,8 +7,10 @@
 #include <arpa/inet.h>
 #include "serializable.hpp"
 #include <stdlib.h>
+#include "oo_model.hpp"
 
 int main() {
+
   int socket_fd, connection_fd;
   struct sockaddr_in myself, client;
   socklen_t client_size = (socklen_t)sizeof(client);
@@ -46,7 +48,6 @@ int main() {
 
   printf("Copiado para array de char (send_buffer) : %s\n", buffer.c_str());
   std::cout << buffer << "\n====================\n";
-  printf("Copiado para array de char (send_buffer) : %s\n", buffer.c_str());
   D2.unserialize(buffer);
   D2.dump();
   /*** Fim - Criando dados para enviar para cliente ***/
@@ -56,7 +57,7 @@ int main() {
     printf("Vou travar ate receber alguma coisa\n");
     connection_fd = accept(socket_fd, (struct sockaddr*)&client, &client_size);
     printf("Recebi uma mensagem:\n");
-    recv(connection_fd, input_buffer, 5, 0);
+    recv(connection_fd, input_buffer, 1, 0);
     printf("%s\n", input_buffer);
 
     /* Identificando cliente */

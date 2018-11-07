@@ -24,19 +24,6 @@ int main() {
   int socket_fd;
   struct sockaddr_in target;
 
-  socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-  printf("Socket criado\n");
-
-  target.sin_family = AF_INET;
-  target.sin_port = htons(3001);
-  inet_aton("127.0.0.1", &(target.sin_addr));
-  printf("Tentando conectar\n");
-  if (connect(socket_fd, (struct sockaddr*)&target, sizeof(target)) != 0) {
-    printf("Problemas na conexao\n");
-    return 0;
-  }
-  printf("Conectei ao servidor\n");
-
   /*** Início - Criando dados para enviar para cliente ***/
   printf("\nCriando structs para receber do server!\n");
   RelevantData D1(1.234, 2.345,1.234, 2.345,11);
@@ -50,16 +37,30 @@ int main() {
   reply = (char *) malloc(50);
   int msg_len;
 
-  char c;
+  socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+  printf("Socket criado\n");
+
+  target.sin_family = AF_INET;
+  target.sin_port = htons(3001);
+  inet_aton("127.0.0.1", &(target.sin_addr));
+  printf("Tentando conectar\n");
+  if (connect(socket_fd, (struct sockaddr*)&target, sizeof(target)) != 0) {
+  	printf("Problemas na conexao\n");
+  	return 0;
+  }
+  printf("Conectei ao servidor\n");
+
+  char c='h';
 
 while(1) {
 
-  c = getchar();
-  if(c == 'w' || c == 's' || c == 'a' || c == 'd' || c == 'q'){
-  }
-  else {
-    c = '0';
-  }
+	  //c = getchar();
+	  // if(c == 'w' || c == 's' || c == 'a' || c == 'd' || c == 'q'){
+	  // }
+	  // else {
+	  //   c = '0';
+	  //
+
     printf("Escrevi mensagem: %c!\n", c);
     //***** A partir daqui, ele envia dados para o servidor
     /* Agora, meu socket funciona como um descritor de arquivo usual */
@@ -71,7 +72,7 @@ while(1) {
     /* Recebendo resposta */
     msg_len = recv(socket_fd, reply, 50, MSG_DONTWAIT);
     if(msg_len > 0) {
-    printf("Recebi a mensagem: %d\n", msg_len);
+    	printf("Recebi a mensagem: %d\n", msg_len);
     }
     //edit: recebendo struct do server
     //printf("Unserialized (reply) : %s\n", reply);
@@ -81,8 +82,9 @@ while(1) {
     D2.dump();
     //printf("Resposta:\n%s\n", reply);
 
-	c = '0'; //edit: zera comando do teclado
-     std::this_thread::sleep_for (std::chrono::milliseconds(100));
+	//c = '0'; //edit: zera comando do teclado
+    //std::this_thread::sleep_for (std::chrono::milliseconds(100));
+	msg_len = 0;
 }
 
   close(socket_fd);

@@ -57,7 +57,7 @@ int main() {
     printf("Vou travar ate receber alguma coisa\n");
     connection_fd = accept(socket_fd, (struct sockaddr*)&client, &client_size);
     printf("Recebi uma mensagem:\n");
-    recv(connection_fd, input_buffer, 1, 0);
+    recv(connection_fd, input_buffer, 2, 0);
     printf("%s\n", input_buffer);
 
     /* Identificando cliente */

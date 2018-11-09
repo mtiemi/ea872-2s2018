@@ -17,13 +17,18 @@ struct DataContainer {
 };
 
 class RelevantData {
-  private:
+private:
     DataContainer data;
 
   public:
     RelevantData();
     RelevantData(float velocidade_x, float velocidade_y, float posicao_x, float posicao_y, int tipo);
     RelevantData(std::string buffer_in);
+    float get_velocidade_x();
+    float get_velocidade_y();
+    float get_posicao_x();
+    float get_posicao_y();
+    int get_tipo();
     void serialize(std::string &buffer_out);
     void unserialize(std::string buffer_in);
     void dump();

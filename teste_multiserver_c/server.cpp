@@ -11,7 +11,7 @@
 #include "serializable.hpp"
 #include "oo_model.hpp"
 
-#define MAX_BUFFER 150
+//#define MAX_BUFFER 150
 #define MAX_CONEXOES 5
 
 /* Estou usando variaveis globais para me referir a variaveis que sao usadas
@@ -55,6 +55,7 @@ void *wait_connections(void *parameters) {
     user_id = adicionar_conexao(conn_fd);
     if (user_id != -1) {
       printf("Novo usuario chegou! ID=%d\n", user_id);
+      //TO-DO:Cria nova snake (Fazer com flags, implementar na main)
     } else {
       printf("Maximo de usuarios atingido!\n");
     }
@@ -70,41 +71,49 @@ int main() {
   int user_iterator;
   char output_buffer[60];
   char input_buffer[50];
+  char *input_char;
   std::string send_buffer;
 
-  /* Inicializando  as variáveis de recebimento de dados */
-  std::cout <<"\n========================================================\n";
-  printf("\nCriando structs para enviar para o cliente!\n");
-  RelevantData D1(9.87, 8.76,9.87, 8.76, 21);
-  RelevantData D2(7.65, 6.54,7.65, 6.54, 22);
-  std::string buffer(40, ' ');
-  std::cout << "Originais:\n";
-  D1.dump();
-  D2.dump();
-  D1.serialize(buffer); //edit: Transforma em array de char para poder enviar dados
-  send_buffer = send_buffer + buffer;
-  //if( strcpy(send_buffer.c_str(), buffer.c_str()) );
-  D2.serialize(buffer);
-  send_buffer = send_buffer + buffer;
-  //strcat(send_buffer.c_str(), buffer.c_str());
-  for (int i=0; i<send_buffer.size(); i++){
-    // if(send_buffer.c_str()[i] == '\0'){
-    //   //send_buffer.c_str()[i] = '#';
-    //   printf("#");
-    // }
-    // else if(send_buffer.c_str()[i] == '\n'){
-    //   printf("*");
-    // }
-    printf("%c", send_buffer.c_str()[i]);
+  /*** Cria lista de Corpos inicial ***/
+  Corpo *c1 = new Corpo(0, 0, (int)SCREEN_WIDTH/2, (int)SCREEN_HEIGHT/2 , COMIDA);
+  Corpo *c2 = new Corpo(10, 0, (int)SCREEN_WIDTH/2, (int)SCREEN_HEIGHT/2 , SNAKE_HEAD);
+  Corpo *c3 = new Corpo(10, 0, ((int)SCREEN_WIDTH/2)-2, (int)SCREEN_HEIGHT/2 , SNAKE_BODY);
+  Corpo *c4 = new Corpo(10, 0, ((int)SCREEN_WIDTH/2)-4, (int)SCREEN_HEIGHT/2 , SNAKE_BODY);
+  Corpo *c5 = new Corpo(10, 0, ((int)SCREEN_WIDTH/2)-6, (int)SCREEN_HEIGHT/2 , SNAKE_BODY);
+
+
+  ListaDeCorpos *l = new ListaDeCorpos();
+  l->add_corpo(c1);
+  l->add_corpo(c2);
+  l->add_corpo(c3);
+  l->add_corpo(c4);
+  l->add_corpo(c5);
+
+
+  SnakeController *f = new SnakeController(l);
+
+  std::vector<Corpo *> *corpos = l->get_corpos();
+  /* Laço para serialização */
+  for(int h=0; h < (*corpos).size(); h++){
+
+    RelevantData DadosCorpo(  (*corpos)[h]->get_velocidade_x(),\
+                              (*corpos)[h]->get_velocidade_y(),\
+                              (*corpos)[h]->get_posicao_x(),\
+                              (*corpos)[h]->get_posicao_y(),\
+                              (*corpos)[h]->get_tipo()
+                              );
+
+    std::string buffer(50, '#');
+    std::cout << "Originais: ";
+    DadosCorpo.serialize(buffer);
+    std::cout << buffer << "\n";
+
+    send_buffer = send_buffer + buffer;
+    std::replace( send_buffer.begin(), send_buffer.end(), '\0', '#'); // replace all '\0' to '#'
+    send_buffer+='\0';
+
+
   }
-  std::replace( send_buffer.begin(), send_buffer.end(), '\0', '#'); // replace all '\0' to '#'
-  send_buffer+='\0';
-  printf("Copiado para array de char ( send_buffer.c_str() ) : \n%s\n", send_buffer.c_str());
-  std::cout << "\n-------------------\n" << "Copiado para array de char ( send_buffer ) :\n";
-  std::cout << send_buffer << "\n-------------------\n";
-  //D2.unserialize(buffer);
-  //D2.dump();
-  std::cout <<"\n========================================================\n";
 
   /* Inicializando variaveis */
   client_size = (socklen_t)sizeof(client);
@@ -134,25 +143,33 @@ int main() {
   while (running) {
     for (user_iterator=0; user_iterator<MAX_CONEXOES; user_iterator++) {
       if (conexao_usada[user_iterator] == 1) {
-        msglen = recv(connection_fd[user_iterator], input_buffer, 50, MSG_DONTWAIT);
-        if (msglen > 0) {
+        msglen = recv(connection_fd[user_iterator], input_buffer, 2, MSG_DONTWAIT);
+        if (msglen > 0) { //Recebeu msg
           printf("Recebi mensagem de %d\n", user_iterator);
           if ( strcmp(input_buffer, "END") == 0) running=0;
-          sprintf(output_buffer, "USER %d: %s\n", user_iterator, input_buffer);
+          sprintf(output_buffer, "USER %d: %c\n", user_iterator, input_buffer[0]);
           printf("%s\n", output_buffer);
+          //dá update no model (Lista de Corpos)
+          if(input_buffer[0] == 'q') {
+            printf("Usuario %d desconectou!\n", user_iterator);
+            remover_conexao(user_iterator);
+            //TO-DO remove todos os corpos desse user
+          }
           for (int ret=0; ret<MAX_CONEXOES; ret++) {
             if (conexao_usada[ret] == 1) {
               printf("Avisando user %d\n", ret);
-              if (send(connection_fd[ret], send_buffer.c_str() , MAX_BUFFER, SO_NOSIGPIPE) == -1) { //editei para enviar buffer serializado
+              if (send(connection_fd[ret], send_buffer.c_str() , MAX_MSG_STRING, SO_NOSIGPIPE) == -1) { //editei para enviar buffer serializado
                /* Usuario desconectou!?? */
                 printf("Usuario %d desconectou!\n", ret);
                 remover_conexao(ret);
+                //TO-DO remove todos os corpos desse user
               }
             }
           }
         }
       }
     }
+    //TODO:update
   }
 
   printf("Encerrando server...\n");

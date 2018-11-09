@@ -39,6 +39,22 @@ RelevantData::RelevantData(std::string buffer_in) {
   this->unserialize(buffer_in);
 }
 
+float RelevantData::get_velocidade_x() {
+  return this->data.velocidade_x;
+}
+float RelevantData::get_velocidade_y(){
+  return this->data.velocidade_y;
+}
+float RelevantData::get_posicao_x(){
+  return this->data.posicao_x;
+}
+float RelevantData::get_posicao_y(){
+  return this->data.posicao_y;
+}
+int RelevantData::get_tipo(){
+  return this->data.tipo;
+}
+
 void RelevantData::serialize(std::string &buffer_out) {
   //std::memcpy((void*)buffer_out.c_str(), &(this->data), sizeof(DataContainer));
   // float a = this->data.velocidade_x;

@@ -319,40 +319,42 @@ void Tela::update() {
   int i,j;
 
   std::vector<Corpo *> *corpos_old = this->lista_anterior->get_corpos();
-
-  // Apaga corpos na tela
-  for (int k=0; k<corpos_old->size(); k++)
-  {
-    i = (int) ((*corpos_old)[k]->get_posicao_x()) * (this->maxI / this->maxX);
-    j = (int) ((*corpos_old)[k]->get_posicao_y()) * (this->maxI / this->maxX);
-    if(move(j, i) != ERR) echochar(' ');  /* Prints character, advances a position */
-  }
-
-  // Desenha corpos na tela
-  std::vector<Corpo *> *corpos = this->lista->get_corpos();
-
-  for (int k=0; k<corpos->size(); k++)
-  {
-    i = (int) ((*corpos)[k]->get_posicao_x()) * (this->maxI / this->maxX);
-    j = (int) ((*corpos)[k]->get_posicao_y()) * (this->maxI / this->maxX);
-
-    if((*corpos)[k]->get_tipo() == COMIDA) { // Printa a comida
-      if(move(j, i) != ERR) echochar('*');  /* Prints character, advances a position */
-    }
-    else { // Printa parte do snake(head ou body)
-      if(move(j, i) != ERR) echochar('@');  /* Prints character, advances a position */
+  if(corpos_old->size() > 0) {
+    //printf("OLAR!!");
+    // Apaga corpos na tela
+    for (int k=0; k<corpos_old->size(); k++)
+    {
+      i = (int) ((*corpos_old)[k]->get_posicao_x()) * (this->maxI / this->maxX);
+      j = (int) ((*corpos_old)[k]->get_posicao_y()) * (this->maxI / this->maxX);
+      if(move(j, i) != ERR) echochar(' ');  /* Prints character, advances a position */
     }
 
-    // Atualiza corpos antigos
-    (*corpos_old)[k]->update(   (*corpos)[k]->get_velocidade_x(),\
-                                (*corpos)[k]->get_velocidade_y(),\
-                                (*corpos)[k]->get_posicao_x(),\
-                                (*corpos)[k]->get_posicao_y()
-                             );
+    // Desenha corpos na tela
+    std::vector<Corpo *> *corpos = this->lista->get_corpos();
+
+    for (int k=0; k<corpos->size(); k++)
+    {
+      i = (int) ((*corpos)[k]->get_posicao_x()) * (this->maxI / this->maxX);
+      j = (int) ((*corpos)[k]->get_posicao_y()) * (this->maxI / this->maxX);
+
+      if((*corpos)[k]->get_tipo() == COMIDA) { // Printa a comida
+        if(move(j, i) != ERR) echochar('*');  /* Prints character, advances a position */
+      }
+      else { // Printa parte do snake(head ou body)
+        if(move(j, i) != ERR) echochar('@');  /* Prints character, advances a position */
+      }
+
+      // Atualiza corpos antigos
+      (*corpos_old)[k]->update(   (*corpos)[k]->get_velocidade_x(),\
+                                  (*corpos)[k]->get_velocidade_y(),\
+                                  (*corpos)[k]->get_posicao_x(),\
+                                  (*corpos)[k]->get_posicao_y()
+                               );
+    }
+    // Atualiza tela
+    refresh();
   }
 
-  // Atualiza tela
-  refresh();
 }
 
 void Tela::stop() {

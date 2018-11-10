@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <cstdlib>
 #include <pthread.h>
 
 #include "serializable.hpp"
@@ -15,7 +16,13 @@ uint64_t get_now_ms() {
   return duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();
 }
 
+
+ListaDeCorpos *l = new ListaDeCorpos();
+Tela *tela = new Tela(l, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
+//tela->init();
+
 int socket_fd;
+std::mutex mtx;           // mutex for critical section
 
 void *receber_respostas(void *parametros) {
   /* Recebendo resposta */
@@ -24,17 +31,6 @@ void *receber_respostas(void *parametros) {
   int msg_num;
   msg_num = 0;
 
-  /* Inicializando  as variáveis de recebimento de dados */
-  //std::cout <<"\n========================================================\n";
-  //printf("\nCriando structs para receber do server!\n");
-  //RelevantData D1(1.234, 2.345,1.234, 2.345,11);
-  //RelevantData D2(4.321, 3.456,4.321, 3.456,12);
-  //std::cout << "Originais:\n";
-  //D1.dump();
-  //D2.dump();
-  //std::cout <<"\n========================================================\n";
-
-  ListaDeCorpos *l = new ListaDeCorpos();
   RelevantData DadosCorpo(0,0,0,0,0);
   while(1) {
 
@@ -46,7 +42,7 @@ void *receber_respostas(void *parametros) {
 
       std::vector<Corpo *> *c_ptr = l->get_corpos();
       int h = 0;
-
+      //mtx.lock();
       while(ptr != NULL) {
         //printf ("OLAR STRING: %s\n",ptr);
         DadosCorpo.unserialize(ptr);
@@ -59,8 +55,6 @@ void *receber_respostas(void *parametros) {
                                 DadosCorpo.get_velocidade_y(),\
                                 DadosCorpo.get_posicao_x(),\
                                 DadosCorpo.get_posicao_y() );
-
-          h++;
         }
         else { //acabaram os corpos existentes, adicionar novos corpos
           //printf("Vou adicionar corpo novo!\n");
@@ -70,13 +64,13 @@ void *receber_respostas(void *parametros) {
                                 DadosCorpo.get_posicao_y(),\
                                 DadosCorpo.get_tipo() );
           l->add_corpo(c1);
-          h++;
         }
-
-
+        h++;
       }
-      //Imprime lista de Corpos
-      // printf("========== Lista de Corpos ==========\n");
+      //mtx.unlock();
+
+      // //Imprime lista de Corpos
+      // printf("========== Lista de Corpos da Thread () ==========\n");
       // //std::vector<Corpo *> *c_ptr = l->get_corpos();
       // for( h = 0; h < (*c_ptr).size(); h++)
       //   printf("%f %f %f %f %d\n", (*c_ptr)[h]->get_velocidade_x(), (*c_ptr)[h]->get_velocidade_y(), (*c_ptr)[h]->get_posicao_x(), (*c_ptr)[h]->get_posicao_y(), (*c_ptr)[h]->get_tipo());
@@ -111,9 +105,9 @@ int main() {
 
   pthread_create(&receiver, NULL, receber_respostas, NULL);
 
+  tela->init();
 
   //inicia as coisas do SNAKE_BODY
-  initscr();
   Teclado *teclado = new Teclado();
   teclado->init();
 
@@ -130,18 +124,31 @@ int main() {
   else if(c == 'q') {
     send(socket_fd, &c, 1, 0);
     // player->play(asample);
-    // asample->set_position(0);
-    break;
+    // asample->set_position(0)
+    tela->stop();
+    teclado->stop();
+    return 0;
   }
   else { send(socket_fd, "k", 1, 0);}
 
-  //send(socket_fd, &c, 1, 0);
+  // send(socket_fd, &c, 1, 0);
+
+
+  //Imprime lista de Corpos
+  // printf("========== Lista de Corpos da Main() ==========\n");
+  // std::vector<Corpo *> *c_ptr = l->get_corpos();
+  // for( int h = 0; h < (*c_ptr).size(); h++)
+  //   printf("%f %f %f %f %d\n", (*c_ptr)[h]->get_velocidade_x(), (*c_ptr)[h]->get_velocidade_y(), (*c_ptr)[h]->get_posicao_x(), (*c_ptr)[h]->get_posicao_y(), (*c_ptr)[h]->get_tipo());
+
+  //processa Tela
+  //tela->update();
+  //f->update(deltaT);
 
   //printf("Escrevi mensagem de %c!\n", c);
   sleep(1); //mudar para ms
   //std::this_thread::sleep_for (std::chrono::milliseconds(100));
 }
   //tela->stop();
-  teclado->stop();
+  //teclado->stop();
   return 0;
 }

@@ -1,7 +1,13 @@
 FLAGS=-lncurses -lpthread -lportaudio -std=c++11
 
-all: snake
+client: client.cpp serializable.cpp serializable.hpp oo_model.cpp oo_model.hpp
+	g++ -oclient client.cpp serializable.cpp oo_model.cpp $(FLAGS)
+	./client
 
-snake: model_mainloop.cpp oo_model.cpp oo_model.hpp
-	g++ -osnake model_mainloop.cpp oo_model.cpp $(FLAGS)
-	./snake
+server: server.cpp serializable.cpp serializable.hpp
+	g++ -oserver server.cpp serializable.cpp oo_model.cpp $(FLAGS)
+	 ./server
+
+serial: main_serialize.cpp serializable.cpp serializable.hpp
+	g++ -oserial main_serialize.cpp serializable.cpp $(FLAGS)
+	 ./serial

@@ -21,6 +21,8 @@ uint64_t get_now_ms() {
 ListaDeCorpos *l = new ListaDeCorpos();
 Tela *tela = new Tela(l, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
 //tela->init();
+SnakeController *f = new SnakeController(l);
+
 
 int socket_fd;
 //std::mutex mtx;           // mutex for critical section
@@ -32,16 +34,31 @@ void *receber_respostas(void *parametros) {
   int msg_num;
   msg_num = 0;
 
+	uint64_t t0;
+	uint64_t t1;
+	uint64_t deltaT;
+	uint64_t T;
+
+	int i = 0;
+
+T = get_now_ms();
+t1 = T;
+
   RelevantData DadosCorpo(0,0,0,0,0);
   while(1) {
 
     msg_len = recv(socket_fd, reply, MAX_MSG_STRING, MSG_DONTWAIT);
+    // Atualiza timers
+    t0 = t1;
+    t1 = get_now_ms();
+    deltaT = t1-t0;
 
     if (msg_len > 0) {
       //printf("[%d][%d] RECEBI:\n%s\n", msg_num, msg_len, reply);
       char *ptr = strtok (reply,"#");
 
       std::vector<Corpo *> *c_ptr = l->get_corpos();
+      tela->update_lista(l);
       int h = 0;
       //mtx.lock();
       while(ptr != NULL) {
@@ -70,9 +87,13 @@ void *receber_respostas(void *parametros) {
       }
       
       // Update da lista da Tela, algo de errado ainda nisso 
-      tela->update_lista(l);
       
+      // Atualiza modelo
+    //f->update(deltaT);
+
+      tela->update();  
       
+      std::this_thread::sleep_for (std::chrono::milliseconds(100)); 
       //mtx.unlock();
       // //Imprime lista de Corpos
       // printf("========== Lista de Corpos da Thread () ==========\n");
@@ -149,8 +170,8 @@ int main() {
   //tela->update();
   //f->update(deltaT);
    
-      tela->update();  
-      std::this_thread::sleep_for (std::chrono::milliseconds(100)); 
+ 
+  std::this_thread::sleep_for (std::chrono::milliseconds(100)); 
     
   //printf("Escrevi mensagem de %c!\n", c);
   //sleep(1); //mudar para ms
